@@ -28,7 +28,7 @@ router.post("/", async (req, res) => {
 
     await transporter.sendMail({
       from: email,
-      to: "kishcode1712@gmail.com",
+      to: "kishcode01@gmail.com",
       subject: subject,
       text: `
 Name: ${name}

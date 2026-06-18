@@ -124,15 +124,13 @@ import nodemailer from "nodemailer";
 
 const router = express.Router();
 
-// POST CONTACT FORM
 router.post("/", async (req, res) => {
   try {
     console.log("Contact API Hit");
-    console.log(req.body);
 
     const { name, email, subject, message } = req.body;
 
-    // Save to MongoDB
+    // Save to DB
     const contact = await Contact.create({
       name,
       email,
@@ -142,51 +140,45 @@ router.post("/", async (req, res) => {
 
     console.log("DB Save Success");
 
-    // Gmail SMTP
+    // ⭐ FIX: Gmail SMTP (Render-safe config)
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
-      port: 587,
-      secure: false,
-      family: 4, // Force IPv4
+      port: 465,
+      secure: true,
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
     });
 
-    console.log("Email User:", process.env.EMAIL_USER);
-    console.log("Email Pass Exists:", !!process.env.EMAIL_PASS);
+    console.log("Before verify");
 
-    // Verify SMTP Connection
     await transporter.verify();
-    console.log("SMTP Connected");
 
-    // Send Email
+    console.log("SMTP OK");
+
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
+      to: process.env.EMAIL_USER,
       replyTo: email,
-      to: "kishcode01@gmail.com",
-      subject: subject,
+      subject: subject || "New Contact Message",
       text: `
 Name: ${name}
 Email: ${email}
-
-Message:
-${message}
+Message: ${message}
       `,
     });
 
-    console.log("Email Sent Successfully");
+    console.log("Email Sent");
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Message sent successfully",
-      contact,
     });
   } catch (error) {
     console.error("CONTACT ERROR:", error);
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: error.message,
     });

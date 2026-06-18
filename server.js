@@ -85,6 +85,32 @@
 
 
 
+// import express from "express";
+// import dotenv from "dotenv";
+// import cors from "cors";
+// import connectDB from "./config/db.js";
+// import contactRoutes from "./routes/contactRoutes.js";
+
+// dotenv.config();
+// connectDB();
+
+// const app = express();
+
+// app.use(cors());
+// app.use(express.json());
+
+// // routes
+// app.use("/api/contact", contactRoutes);
+
+// const PORT = process.env.PORT || 5000;
+
+// app.listen(PORT, () => {
+//   console.log(`Server running on port ${PORT}`);
+// });
+
+
+
+
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -96,7 +122,17 @@ connectDB();
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://genuine-kitten-4514af.netlify.app",
+    ],
+    methods: ["GET", "POST"],
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
 // routes
